@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Linux and Python Programming, 2017 - Exam</title>
+    
+    <!-- <link rel="stylesheet" href="../handin.css"> -->
+    <!-- <link rel="stylesheet" href="handin.css"> -->
+
+    <!-- <script src="../reveal.js-3.1.0/plugin/highlight/highlight.js"></script>     -->
+    <script src="https://absalon.instructure.com/files/1613922/download"></script>    
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- For syntax highlighting -->
+    <!-- <link rel="stylesheet" href="../reveal.js-3.1.0/lib/css/googlecode.css"> -->
+    <link rel="stylesheet" href="https://absalon.instructure.com/files/1613923/download">
+
+    <style>
+      .reveal .tt {
+      font-family:monospace;
+      text-transform:none;
+      }
+      .helpbox {
+      margin-top:0.5em;
+      margin-bottom:0.5em;
+      border:1px solid red; 
+      width:100%;background: 
+      white;padding:10px;
+      padding-top:0em;
+      padding-bottom:0em;
+      }
+
+      .reveal dt {
+      font-weight: bold; 
+      margin-top:0.75em;
+      }
+      
+      .reveal dd {
+      margin-left: 40px; }
+
+    </style>
+    
+  </head>
+  
+  <body>
+    
+    <div class="reveal" style="width:800px; margin-left: auto; margin-right:auto;margin-top:20px;">
+
+<h2>Linux and Python Programming / Python Programming, Exam, 2017</h2>
+
+<h3>Background</h3>
+
+<p>There has been a lot of talk about North Korean missile tests over
+the last year. In this exam, we will try to visualize the ranges of
+these missiles over the years. In order to create a map of the world,
+we will start by reading in coordinates for all countries. We will
+then create an image of the world, and finally we will plot the ranges
+of missiles on this plot.</p>
+
+<p>Our analysis will be based on the following two data files:</p>
+
+<ul>
+<li><a href="http://people.binf.ku.dk/wb/data/countries.dat">http://people.binf.ku.dk/wb/data/countries.dat</a></li>
+<li><a href="http://people.binf.ku.dk/wb/data/north_korea_missile_test_database.csv">http://people.binf.ku.dk/wb/data/north_korea_missile_test_database.csv</a></li>
+</ul>
+
+<p>The first is a file with coordinates for the shapes of all the world's
+countries, derived from the "small-scale" dataset available on
+the <a href="http://www.naturalearthdata.com/downloads/">Natural
+Earth</a> website. The second file is a database of all North Korean
+missile tests,
+found <a href="www.nti.org/analysis/articles/cns-north-korea-missile-test-database/">here</a>,
+which we have converted to a csv (comma-separated values) format for this exercise. Please start
+by downloading both these files.</p>
+
+<p>In order to complete this exercise, you will need an external Python package called <code>basemap</code>. This package can be installed inside the VirtualBox by using the following command in the terminal (remember that the password is "linuxpython"):
+<pre>
+sudo apt-get install python3-mpltoolkits.basemap
+</pre>
+Part of the exam will be to look up documentation for particular functions in this external package, as well as for some functionality in the <code>matplotlib</code> and <code>numpy</code> packages. In the code-fragments that we provide, we assume that the external modules have been imported in the following way:
+<pre class="reveal"><code class="python" data-trim>import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+import numpy as np</code></pre>
+</p>
+
+<p>The following box contains the practical details of the exam. <span style="font-weight:bold">Please read it carefully!</span></p>
+
+<div style="margin-top:1em;width:100%; border:1px solid grey; padding: 0em 1em 1em 1em; box-sizing:border-box">
+  <h3 style="padding-top:0;">Formal requirements:</h3>
+
+  <dl>
+    <dt>Format:</dt>
+    <dd>You should hand in:
+        <ol>
+          <li>A Python file called <span style="font-family:monospace">exam.py</span>, containing the function definitions.</li>
+          <li>A Python file called <span style="font-family:monospace">exam_test.py</span>, containing test code for the individual questions.</li>
+          <li>A plain text file called <span style="font-family:monospace">exam.sh</span>, containing the Unix commands used <span style="color:red">(not relevant for Health Informatics students)</span>.</li>
+        </ol>
+    </dd>
+    <dt>Content:</dt>
+    <dd>For the Python part, remember to comment your code, use
+        meaningful variable names, and include docstrings for each
+        function. Also, limit yourself to the curriculum covered in
+        the course, that is, <span style="font-weight:bold">do not use
+        list and dict comprehension, map, zip, reduce, filter and
+        lambda</span>. Also, please use only those external modules
+        that are explicitly mentioned in the exercise. Failure to do
+        any of these will force us to deduct points even for code that works.</dd>
+    <dt>Can we work in groups?</dt>
+    <dd><span style="font-weight:bold">No. It is forbidden to discuss the exam exercises with anyone else.</span> We will systematically use plagiarism programs to catch similarities between the exam solutions, and if we detect any plagiarism we will be forced to report it to the University Study Administration, who will then act accordingly.</dd>
+    <dt>How do I hand-in?</dt>
+    <dd>The exam should be submitted to the Digital Exam system.</dd>
+  </dl>
+</div>
+
+<h3 style="margin-top:1em;">Question 1: Country coordinate data</h3>
+
+<p>Start by looking through the <code>countries.dat</code> to get an idea of how the file is structured. You will notice that there are two types of lines: name lines and coordinate lines. Also note that each country can have several coordinate lines, which is because many countries consist of several independent shapes.</p>
+
+<ol>
+  <li><p>Inside the <code>exam.py</code> file, create a function called <code>read_country_data</code> which takes a single filename argument, and returns a dictionary where each key is a country name, and each value is a <i>list of lists</i> of coordinate tuples. To differentiate between name-lines and coordinate-lines, you should use the following regular expression: <code>[-0-9;. ]</code>. Note that the coordinates should be floating point values.</p><p> Inside the <code>exam_test.py</code>, import the <code>exam</code> module, and test the <code>read_country_data</code> function by calling it on the <code>countries.dat</code> file. Save the output to a variable called <code>country_data</code>. Print the coordinates of Denmark to screen.</p>
+
+    <div style="border:1px solid red; background:#f1f1f1; padding-left:10px; padding-right:10px;">
+
+      <p>If you have problems completing this exercise, and therefore do
+        not have the requested dictionary, please follow the following
+        instructions in order to be able to complete the remainder of the
+        exercises:</p>
+
+      Download the following file:
+      <ul>
+        <li><a href="http://people.binf.ku.dk/wb/data/countries.json">http://people.binf.ku.dk/wb/data/countries.json</a></li>
+      </ul>
+      <p>Insert the following lines of code in your program:</p>
+      <pre class="reveal"><code class="python" data-trim>import json
+with open("countries.json") as countries_json_file:
+    country_data = json.load(countries_json_file)
+</code></pre>
+      <p>Note that this dictionary is not exactly identical to the one you get from solving the exercise yourself (so you cannot use it for verification purposes).</p>
+    </div>          
+
+  </li>
+  <li><p>Inside the <code>exam.py</code> file, create a function called <code>find_center</code>, which has a single argument called <code>coordinates</code> (which is a list of list of coordinate pairs, e.g. those corresponding for a single country in the country_data dictionary). The function should calculate the center (i.e. the average) of the latitude and longitude over all the coordinates in the list of lists. It should return a single tuple containing the average latitude and longitude.</p>
+
+<p>Some of you might have noticed that simply averaging coordinates will fail if countries have coordinates on both sides of the dateline (i.e. countries that have longitude values both at ~-180&#176; and ~180&#176;). Please just ignore this fact for this exercise.<p>
+<p>Inside the <code>exam_test.py</code>, call the <code>find_center</code> function on the coordinates of Denmark. Save the result in a variable called <code>dk_center</code>. Now do the same for North Korea, and save it in a variable called <code>nk_center</code>.</p>
+    <div style="border:1px solid red; background:#f1f1f1; padding-left:10px; padding-right:10px;margin-bottom:1em">
+
+      <p>If you have problems completing this exercise, and therefore do
+        not have the center coordinates for Denmark and North Korea, just use the following:
+
+      <pre class="reveal"><code class="python" data-trim>dk_center = (56., 10.)
+nk_center = (40., 127.)
+</code></pre>
+      Note that these values are not exactly identical to the ones you get from solving the exercise yourself (so you cannot use them for verification purposes).</p>
+    </div>          
+</li>
+<li><b><span style="color:red">Unix: not for Health Informatics students</span></b>. Write a Unix command that counts the total number of countries in the <code>countries.dat</code> file.</li>
+</ol>
+
+
+<h3 style="margin-top:1em;">Question 2: Creating a globe map</h3>
+
+<p>We will now create a plot of the world, using the <code>basemap</code> toolkit.</p>
+
+<ol>
+  <li>Copy/Paste the following <code>draw_globe_map</code> code into the <code>exam.py</code> file:
+<pre class="reveal"><code class="python" data-trim>def draw_globe_map(view_center):
+    """Draw a map in using an orthographic projection
+
+    Args:
+        view_center: A `tuple` with the latitude, longitude specifying
+        where the map should be centered.
+
+    Returns:
+        A `Basemap` object.
+    """
+
+    # Set up orthographic map projection. Use low resolution coastlines.
+    globe_map = Basemap(projection='ortho', resolution='l',
+                        lat_0=view_center[0],
+                        lon_0=view_center[1])
+    # draw lat/lon grid lines every 30 degrees.
+    globe_map.drawmeridians(np.arange(0,360,30), color='0.8')
+    globe_map.drawparallels(np.arange(-90,90,30), color='0.8')
+
+    # TODO: Draw coastlines, country outlines and colour the continents
+
+    return globe_map
+</code></pre>
+    <p>Now, based on online documentation of <code>basemap</code>, add the following (replacing the <code># TODO</code> comment):</p>
+    <ul>
+      <li>draw coastlines (with line width 0.25, and using some light grey as a colour)</li>
+      <li>draw country outlines (with line width 0.25, and using some light grey as a colour)</li>
+      <li>colour the continents (using some light grey as a colour)</li>
+    </ul>
+    <!-- <p>Inside the <code>exam_test.py</code>, call the <code>draw_globe_map</code> function, using <code>dk_center</code> as argument. Save the return value from this function in a variable called <code>globe_map_dk</code>. Use matplotlib's <code>savefig</code> to save the plot as <code>globe_map_dk.png</code>.<p> -->
+    <p>Inside the <code>exam_test.py</code>, call the <code>draw_globe_map</code> function, using <code>nk_center</code> as argument. Save the return value from this function in a variable called <code>globe_map_nk</code>. Use matplotlib's <code>savefig</code> to save the plot as <code>globe_map_nk.png</code>. Hint: you can use <code>Firefox</code> or the <code>display</code> program in the virtual box to inspect the images.<p>
+</li>
+  <li>Inside the <code>exam.py</code> file, add the following function:
+
+<pre class="reveal"><code class="python" data-trim>def highlight_region(globe_map, coordinate_lists):
+    """Add polygons in Basemap, based on provided
+       lat,lon coordinates (in degrees)
+
+    Args:
+        globe_map: A `Basemap object`.
+        coordinate_lists: A `list` of `list`s of
+            coordinate pairs.
+    """
+    # Project lat,lon coordinates into x,y coordinates
+    mapped_coordinates = []
+    for coord_list in coordinate_lists:
+        coord_array = np.array(coord_list)
+        mapped_coordinates.append(
+            np.stack(globe_map(coord_array[:, 1], coord_array[:, 0])).T)
+
+    # Add polygons for each coordinate list
+    patches = []
+    for coord_list in mapped_coordinates:
+        patches.append(
+            matplotlib.patches.Polygon(np.array(coord_list), closed=True))
+        plt.gca().add_patch(patches[-1])
+    # Clip polygons to fit within polar plot
+    # This call differs between versions of Basemap.
+    try:
+        globe_map._clipcircle(plt.gca(), patches)
+    except AttributeError:
+        globe_map._cliplimb(plt.gca(), patches)
+</code></pre>
+
+<p>Inside the <code>exam_test.py</code>, call the <code>highlight_region</code> function on the coordinates data for North Korea (from the country_data dictionary). Save the resulting plot as <code>globe_map_nk_highlighted.png</code>.</p></li>
+
+<li>We will now create a series of images to reflect a gradual change of focus from Denmark to North Korea. Below, you will find a function called <code>map_transition</code> that includes most of the functionality to do this, but with three lines missing (the three TODO comments). Copy/paste  the function to the <code>exam.py</code> file, and fill in the three missing pieces (just replace the "# TODO..." lines). Hint: <code>current_center</code> should be incremented by the total distance divided by the number of steps.
+
+<p>To test it, add code in the <code>exam_test.py</code> file, calling the <code>map_transition</code> function on the center coordinates of Denmark (as center1), and North Korea (as center2), taking at 10 steps, and highlighting North Korea.</p>
+
+<pre class="reveal"><code class="python" data-trim>def map_transition(center1, center2, highlight_coords, steps=10):
+    """Create transition from one map center to another.
+    
+    Args:
+        center1: `tuple` containing latitude, longitude coordinates. This
+            is the starting point for the transition.
+        center2: `tuple` containing latitude, longitude coordinates. This
+            is the end point for the transition.
+        highlight_coords: `list` of `list` of coordinate pairs, specifying
+            a region to be highlighted.
+        steps: `int` specifying how many steps should be taken.
+    """
+
+    # Convert start and end latitude,longitude into a single array
+    center = np.array([center1, center2])
+
+    # Calculate total distance in both latitude and longitude
+    distance = center[1, :] - center[0, :]
+
+    # Initialize to center1
+    current_center = center[0, :]
+
+    for i in range(steps):
+        
+        print("Transition step %d" % i)
+
+        # Update current_center with appropriate distance
+        # TODO: Update current_center
+
+        # Create new figure (to get rid of any old plots)
+        plt.figure()
+
+        # Draw new map and highlight region
+        # TODO: call the draw_globe_map function using current center
+        # TODO: call the highlight_region function using highlight_coords
+
+        # Save plot to file
+        plt.savefig("globe_map_%03d.png" % i)  
+</code></pre>
+</li>
+
+<li><b><span style="color:red">Unix: not for Health Informatics students</span></b>.
+On the virtual box, there is a program called <code>convert</code> (part of the ImageMagick toolkit) that can do conversions between many different image file types. Write a Unix command that uses <code>convert</code> to turn the <code>.png</code> files from the previous exercise into an single "animated gif" called <code>globe_map_animated.gif</code>. (Hint: you can view this animated gif using the Firefox browser).
+    <div style="border:1px solid red; background:#f1f1f1; padding-left:10px; padding-right:10px;margin-top:1em;">
+
+      <p>If you had problems completing the previous exercise, and therefore do
+        not have the images needed for this exercise, please execute the following lines in the terminal:</p>
+      <pre class="reveal"><code class="nohighlight" data-trim>wget http://people.binf.ku.dk/wb/data/globe_map.tar.gz
+tar -zxvf globe_map.tar.gz
+</code></pre>
+      <p>The files will now be located in the globe_map directory.</p>
+    </div>          
+
+
+</li>
+
+</ol>
+
+<h3 style="margin-top:1em;">Question 3: Missile data</h3>
+
+<p>In this last exercise, we will read in the data on the North Korean missile tests, and plot it on our map. Start by looking through the <code>north_korea_missile_test_database.csv</code> file to get an idea of how the data is organized. You will note that fields are separated by semicolons, and that the first line contains the names of the fields.</p>
+
+<ol>
+<li><p>Inside the <code>exam.py</code> file, write a function called <code>read_missile_data</code> that takes two arguments <code>data_filename</code>, and 
+   <code>selected_columns</code> (a list of strings). The first argument is used to specify the name of the file, while the second
+   is a list of column names (e.g. <code>["Facility Latitude", "Facility Longtidue"]</code>) which we would like to read in. The function should:
+<ol type="a">
+  <li>Open the <code>data_filename</code> file.</li>
+  <li>Read the lines of the files into a list.</li>
+  <li>Extract the column names from the first line of the file, and save them as a list called <code>column_names</code>.</li>
+  <li>Create a dictionary called <code>column_indices</code> which for each of the names in <code>selected_columns</code>
+      finds the corresponding column-index in the file (i.e. the index in <code>column_names</code>).</li>
+  <li>Iterate over all the lines (except the first), and for each line, create a dictionary which
+      as keys contains the selected column names, and as values the corresponding values. These
+      dictionaries should be appended to a list called <code>missile_data</code> defined outside the loop.
+      Overall, you should end up with a list where you can write: <pre style="display:inline"><code class="python" data-trim>missile_data[0]["Facility Latitude"]</code></pre></li>
+  <li>Return the missile data list.</li>
+</ol>
+<p>Inside the <code>exam_test.py</code>, call the <code>read_missile_data</code> function on the <code>north_korea_missile_test_database.csv</code> filename, and select the field names "Facility Latitude", "Facility Longitude", and "Distance Travelled". Save the result in a variable called <code>missile_data</code>.</p>
+
+    <div style="border:1px solid red; background:#f1f1f1; padding-left:10px; padding-right:10px;">
+
+      <p>If you have problems completing this exercise, and therefore do
+        not have the requested dictionary, please follow the following
+        instructions in order to be able to complete the remainder of the
+        exercises:</p>
+
+      Download the following file:
+      <ul>
+        <li><a href="http://people.binf.ku.dk/wb/data/missile_data.json">http://people.binf.ku.dk/wb/data/missile_data.json</a></li>
+      </ul>
+      <p>Insert the following lines of code in your program:</p>
+      <pre class="reveal"><code class="python" data-trim>import json
+with open("missile_data.json") as missile_data_json_file:
+    missile_data = json.load(missile_data_json_file)
+</code></pre>
+      <p>Note that this dictionary is not exactly identical to the one you get from solving the exercise yourself (so you cannot use it for verification purposes).</p>
+    </div>          
+
+</li>
+<li><p>We will now plot circles on the globe corresponding to the range of North Korean
+   missiles in the different tests. For this purpose, we will use the following function:</p>
+
+<pre><code class="python" data-trim>def plot_circle_on_globe(globe_map, center, radius,
+                         edge_color='red', alpha=0.15):
+    """Draw a circle on a sphere.
+
+    Args:
+        globe_map: A `Basemap object`.
+        center: A `tuple` containing the latitude, longitude of the center
+                of the circle.
+        radius: A `float` specifying the radius of the circle as measured on
+                the surface of the sphere.
+        edge_color: A matplotlib-compatible color specification of the edge
+                color of the circle.
+        alpha: A `float` specifying the level of opacity of the circle.
+    """
+
+    radius_of_earth = 6371
+
+    # Convert to radians
+    lat = center[0]/180.*np.pi
+    lon = center[1]/180.*np.pi
+
+    # Radius in terms of angle (radians)
+    angle_dist = radius / radius_of_earth
+
+    # An angular grid
+    rot_angle = np.arange(0, 2*np.pi, 0.1)
+
+    # Transformed latitude, longitude values for all grid points
+    lat_rad = np.arcsin(np.sin(lat) * np.cos(angle_dist) +
+                        np.cos(lat) * np.sin(angle_dist) * np.cos(rot_angle))
+    lon_rad = lon + np.arctan2(np.sin(rot_angle) * np.sin(angle_dist) *
+                               np.cos(lat),
+                               np.cos(angle_dist) - np.sin(lat) *
+                               np.sin(lat_rad))
+
+    # Convert to degrees
+    lat_degrees = lat_rad / np.pi * 180.
+    lon_degrees = lon_rad / np.pi * 180.
+
+    # Map from lat,lon values to x,y values
+    mapped_coordinates = np.stack(globe_map(lon_degrees, lat_degrees)).T
+
+    # Create Polygon on map
+    plt.gca().add_patch(matplotlib.patches.Polygon(mapped_coordinates,
+                                                   ec=edge_color, fc="none",
+                                                   alpha=alpha, closed=True,
+                                                   zorder=2, linewidth=1.))
+</code></pre>
+<p>Start by copying the <code>plot_circle_on_globe</code> function to the <code>exam.py</code> file.</p>
+
+<p>Inside the <code>exam.py</code> file, write a function
+   called <code>plot_missile_data</code> that takes two arguments,
+   a <code>Basemap</code> object like that the globe_map of Question
+   2, and a missile_data object from Question 3.1. The function should
+   iterate through the entries of the missile_data object. For each
+   entry, it should extract the latitude, longitude and distance
+   values, and convert them to float. Note that for the distance
+   value, you should remove the "km" suffix from the string, and for
+   the longitude and latitude, you should replace "," with ".". In
+   case of missing values, the float conversion will fail with a <code>ValueError</code>. You should
+   handle this case using a single try-except statement that surrounds
+   all conversions. If any of the conversions fail, detect this error,
+   and respond by jumping to the next iteration in the loop. If the
+   conversions succeed, call the <code>plot_circle_on_globe</code> function.</p>
+
+<p>Inside the <code>exam_test.py</code>, call the <code>plot_missile_data</code> function on the <code>globe_map_nk</code> and <code>missile_data</code> variables. Save the plot in a file called <code>north_korea_missiles.png</code>.</p></li>
+<li><b><span style="color:red">Unix: not for Health Informatics students</span></b>. Reproduce the data processing steps that we just did in Python, but now from the terminal: extract the 10th, 11th and 14 columns, remove <code>km</code>, replace "," with "." and remove any lines for which any of the values are undefined. Save the output as <code>north_korea_missile_test_database_filtered.csv</code>.</p>
+</li>
+</ol>
+
+<h3>Final remarks</h3>
+
+<p>That's it. You should now have a rough overview of the ranges of North Korean missiles. It would of course be more informative to display the <i>progresssion</i> of ranges, by distinguishing between the types of missiles and/or the time of launch in our plot, but that's unfortunately out of the scope of this exam. If you are interested, take a look at <a href="http://www.abc.net.au/news/2017-10-16/north-korea-missile-range-map/8880894">this page</a>, which contains a more thorough analysis (and which served as the inspiration for this exam). Note that although this webpage looks more advanced than what you have produced in this exam, the basic ingredients are the same as you used here: plotting a globe, highlighting countries, drawing circles, and transitioning from one view to another.</p>
+
+<p>One last comment regarding help: while we can of course not help
+  you with solving the exam exercise itself, we are available for
+  questions regarding technical issues and in cases where you are in
+  doubt about how a question should be interpreted. In particular, if
+  you experience problems with your virtual machine that prevent you
+  from solving the exam, please contact us immediately so we can find
+  a solution as quickly as possible. Unlike the hand-ins throughout
+  the course, you will (of course) not be able to get detailed
+  feedback on your solution by submitting it to the automated
+  correction server. However, we have set up the system to allow you
+  to test whether the basic structure of your files is correct. As
+  usual, you can send an email to <code>lppass@binf.ku.dk</code> with
+  subject <code>exam</code>. If tests pass, it says nothing about the
+  correctness of your assignment, so you cannot use it to validate
+  your solution, but if a test fails, it means that this particular
+  exercise does not run, and will therefore not be assessed for the
+  exam. Using this service is entirely optional, but we highly
+  recommend using it to rule out any technical issues.  If you
+  experience code that works on your own machine but fails on the
+  server, feel free to contact us about this, as this will fall under
+  the category "technical issues" which we are allowed to help
+  with. <span style="font-weight:bold">It is extremely important to
+  note that the autocorrection system SHOULD NOT BE USED for the final
+  submission. Only submissions through the Digital Exam system will be
+  considered.</span></p>
+
+</div></body></html>
