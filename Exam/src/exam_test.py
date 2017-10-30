@@ -12,3 +12,12 @@ nk_center = exam.find_center(country_data["North Korea"])
 
 print(dk_center)
 print(nk_center)
+
+
+# Task 2.1
+globe_map_nk = exam.draw_globe_map(nk_center)
+exam.plt.savefig("globe_map_nk.png")
+
+# Task 2.2
+globe_map_nk_highlighted = exam.highlight_region(globe_map_nk, country_data["North Korea"])
+exam.plt.savefig("globe_map_nk_highlighted.png")
