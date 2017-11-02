@@ -1,11 +1,8 @@
-#!/usr/bin/python3
-
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
 import re
-
 
 # ===== Assignment 1 Function ===== #
 
@@ -186,17 +183,146 @@ def map_transition(center1, center2, highlight_coords, steps=10):
         
         print("Transition step %d" % i)
 
+        # Note: Currently i assume the first image, 
+        # is the one where i have stepped one time. 
+        # Thus the first plotted image, isn't on center 1. This could
+        # be changed, by incrementing after plotting, and adding a step.
+        # Thus the first image would be center1, followed by 10 step images.
+
         # Update current_center with appropriate distance
-        # TODO: Update current_center
+        for q in range(len(center)):
+            current_center[q] += (distance[q]/steps)
 
         # Create new figure (to get rid of any old plots)
         plt.figure()
 
         # Draw new map and highlight region
-        # TODO: call the draw_globe_map function using current center
-        # TODO: call the highlight_region function using highlight_coords
+        step_map = draw_globe_map(current_center)
+        step_map_highlighted = highlight_region(step_map, highlight_coords)
 
         # Save plot to file
         plt.savefig("globe_map_%03d.png" % i) 
 
+# ===== Assignment 3 Functions ===== #
 
+
+def read_missile_data(data_filename, selected_columns):
+    """
+        Follows the steps described in task 3.1.
+        Looks up data from data_filename, and filters out
+        unwanted columns using the selected_columns list.
+        
+        Args:
+            data_filename: String describing the path to file being
+                read
+            selected_columns: List of strings, describing the 
+                columns names wanted in the final output
+        Returns:
+            A list of dictionaries, one dictionary per line in
+            the data_filename file. The dictionaries contain
+            one key per selected_columns, where the value
+            is the one associated with the specific column
+    """
+    
+    # Initialize variables
+    readData = []
+    missile_data = []
+    column_names = []
+
+    # a and b - Open and add to list
+    with open(data_filename, "r") as f:
+        for line in f:
+            readData.append(line.strip('\n '))
+
+
+    # c - Get column names, from the first line
+    column_names = readData[0].split(";")
+
+    # Remove, since extracted
+    del(readData[0])
+
+    # d - Get index of selected_column entries in column_names
+    column_indices = []
+    for i in selected_columns:
+        if i in column_names:
+            column_indices.append(column_names.index(i))
+
+    # e - Convert read data to ";" seperated lists, and fliter out
+    # unwanted columns
+    for i in readData:
+        # Create dictionary to be added into, and split data
+        dictionary = {}
+        data = i.split(";")
+
+        
+        # Uses loop variable nameIndex to lookup name in selected_columns
+        # which is used as dictionary key
+        # and its' index in data in column_indices
+        for nameIndex in range(len(column_indices)):
+            columns_index = column_indices[nameIndex]
+            dictionary[selected_columns[nameIndex]] = data[columns_index]
+
+        # Append dictionary to missile_data
+        missile_data.append(dictionary)
+
+    return missile_data
+
+def plot_circle_on_globe(globe_map, center, radius,
+                         edge_color='red', alpha=0.15):
+    """Draw a circle on a sphere.
+
+    Args:
+        globe_map: A `Basemap object`.
+        center: A `tuple` containing the latitude, longitude of the center
+                of the circle.
+        radius: A `float` specifying the radius of the circle as measured on
+                the surface of the sphere.
+        edge_color: A matplotlib-compatible color specification of the edge
+                color of the circle.
+        alpha: A `float` specifying the level of opacity of the circle.
+    """
+
+    radius_of_earth = 6371
+
+    # Convert to radians
+    lat = center[0]/180.*np.pi
+    lon = center[1]/180.*np.pi
+
+    # Radius in terms of angle (radians)
+    angle_dist = radius / radius_of_earth
+
+    # An angular grid
+    rot_angle = np.arange(0, 2*np.pi, 0.1)
+
+    # Transformed latitude, longitude values for all grid points
+    lat_rad = np.arcsin(np.sin(lat) * np.cos(angle_dist) +
+                        np.cos(lat) * np.sin(angle_dist) * np.cos(rot_angle))
+    lon_rad = lon + np.arctan2(np.sin(rot_angle) * np.sin(angle_dist) *
+                               np.cos(lat),
+                               np.cos(angle_dist) - np.sin(lat) *
+                               np.sin(lat_rad))
+
+    # Convert to degrees
+    lat_degrees = lat_rad / np.pi * 180.
+    lon_degrees = lon_rad / np.pi * 180.
+
+    # Map from lat,lon values to x,y values
+    mapped_coordinates = np.stack(globe_map(lon_degrees, lat_degrees)).T
+
+    # Create Polygon on map
+    plt.gca().add_patch(matplotlib.patches.Polygon(mapped_coordinates,
+                                                   ec=edge_color, fc="none",
+                                                   alpha=alpha, closed=True,
+                                                   zorder=2, linewidth=1.))
+def plot_missile_data(basemap, missile_data):
+    keys = ["Facility Latitude", "Facility Longitude","Distance Travelled"]
+
+    for data in missile_data:
+        converted_data = []
+        try:
+            for key in keys:
+                val = data[key]
+                converted_data.append(float(val.strip(' km').replace(",",".")))
+            plot_circle_on_globe(basemap, tuple(converted_data[:2]), converted_data[-1])
+        except ValueError:
+            continue
