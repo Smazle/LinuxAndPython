@@ -315,6 +315,21 @@ def plot_circle_on_globe(globe_map, center, radius,
                                                    alpha=alpha, closed=True,
                                                    zorder=2, linewidth=1.))
 def plot_missile_data(basemap, missile_data):
+    """
+        Uses the keys list to look up the coordinates up the needed
+        data from the missile_data dictionary. If the data
+        is succesfully converted to floating point values, they are 
+        used to plot the placement of a millitary base, and their 
+        range in the form of a circle.
+
+        Args:
+            basemap: Basemap which in this case depicts the globe,
+                use to plot on.
+
+            missile_data: Dictionary containing the imported data
+                of "north_korea_missile_test_database.csv".
+    """ 
+
     keys = ["Facility Latitude", "Facility Longitude","Distance Travelled"]
 
     for data in missile_data:
